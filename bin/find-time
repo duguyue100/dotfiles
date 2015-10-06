@@ -1,0 +1,12 @@
+#!/bin/bash
+
+usage='usage: find-time [FIND_ARGS...]
+
+list files by modification time
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+find $@ -printf "%T@ %p\n" |
+sort --reverse             |
+cuts --fields 2-

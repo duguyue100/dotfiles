@@ -1,0 +1,193 @@
+#!/usr/bin/env ruby
+
+require 'yajl'
+
+def main argv
+
+  include Tmux
+
+  parse(argv).each do |message|
+    send message
+  end
+
+end
+
+# Introspection
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾
+# commands → tmux-msg inspect | jq --raw-output 'keys | .[]'
+# description → tmux-msg inspect | jq --raw-output '.<command> | .desc'
+
+# Configuration
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾
+# bind 1 run-shell 'tmux-msg window  1'
+# bind 2 run-shell 'tmux-msg window  2'
+# bind 3 run-shell 'tmux-msg window  3'
+# bind 4 run-shell 'tmux-msg window  4'
+# bind 5 run-shell 'tmux-msg window  5'
+# bind 6 run-shell 'tmux-msg window  6'
+# bind 7 run-shell 'tmux-msg window  7'
+# bind 8 run-shell 'tmux-msg window  8'
+# bind 9 run-shell 'tmux-msg window  9'
+# bind 0 run-shell 'tmux-msg window 10'
+#
+# bind '!' run-shell 'tmux-msg move pane to window  1'
+# bind '@' run-shell 'tmux-msg move pane to window  2'
+# bind '#' run-shell 'tmux-msg move pane to window  3'
+# bind '$' run-shell 'tmux-msg move pane to window  4'
+# bind '%' run-shell 'tmux-msg move pane to window  5'
+# bind '^' run-shell 'tmux-msg move pane to window  6'
+# bind '&' run-shell 'tmux-msg move pane to window  7'
+# bind '*' run-shell 'tmux-msg move pane to window  8'
+# bind '(' run-shell 'tmux-msg move pane to window  9'
+# bind ')' run-shell 'tmux-msg move pane to window 10'
+#
+# bind h run-shell 'tmux-msg focus left  \; display panes'
+# bind j run-shell 'tmux-msg focus down  \; display panes'
+# bind k run-shell 'tmux-msg focus up    \; display panes'
+# bind l run-shell 'tmux-msg focus right \; display panes'
+#
+# bind H run-shell 'tmux-msg move left  \; display panes'
+# bind J run-shell 'tmux-msg move down  \; display panes'
+# bind K run-shell 'tmux-msg move up    \; display panes'
+# bind L run-shell 'tmux-msg move right \; display panes'
+#
+# bind C-h run-shell 'tmux-msg resize left  5'
+# bind C-j run-shell 'tmux-msg resize down  5'
+# bind C-k run-shell 'tmux-msg resize up    5'
+# bind C-l run-shell 'tmux-msg resize right 5'
+#
+# bind n run-shell 'tmux-msg window next'
+# bind N run-shell 'tmux-msg window prev'
+#
+# bind o run-shell 'tmux-msg split vertical   \; display panes'
+# bind O run-shell 'tmux-msg split horizontal \; display panes'
+#
+# bind w run-shell 'tmux-msg kill \; display panes'
+#
+# bind f run-shell 'tmux-msg fullscreen'
+
+module Tmux
+
+  Commands = {
+    attach: {
+      command: 'tmux new-session -s %{session} || tmux attach-session -t %{session}',
+      desc: 'attach session',
+    },
+    detach: {
+      command: 'tmux detach',
+      desc: 'detach client',
+    },
+    new: {
+      command: 'tmux new-session -s %{session}',
+      desc: 'new session',
+    },
+    choose_session: {
+      command: 'tmux choose-session',
+      desc: 'choose session',
+    },
+    window: {
+      command: 'tmux new-window -t %{name} || tmux select-window -t %{name}',
+      desc: 'focus window',
+    },
+    move_pane_to_window: {
+      command: 'tmux join-pane -d -t :%{name}',
+      desc: 'move pane to window',
+    },
+    split: {
+      command: 'tmux split-window -%{direction} -c \#{pane_current_path}',
+      desc: 'split window',
+    },
+    move: {
+      command: 'tmux swap-pane -s {%{direction}-of}',
+      desc: 'move pane',
+    },
+    resize: {
+      command: 'tmux resize-pane %{direction} %{adjustment}',
+      desc: 'resize pane',
+    },
+    focus: {
+      command: 'tmux select-pane %{direction}',
+      desc: 'focus pane',
+    },
+    kill: {
+      command: 'tmux kill-pane',
+      desc: 'kill pane',
+    },
+    display_panes: {
+      command: 'tmux display-panes',
+      desc: 'display panes',
+    },
+    fullscreen: {
+      command: 'tmux resize-pane -Z',
+      desc: 'fullscreen',
+    },
+  }
+
+  def send message
+
+    options = {
+      direction: %w(left down up right).map { |direction| [direction.to_sym, ('-' + direction.upcase[0])] }.to_h
+    }
+
+    command, arguments = case message
+    when /inspect/.delimit
+      [lambda { puts Yajl::Encoder.encode Commands }]
+    when /attach (\w+)/.delimit
+      [:attach, { session: $1 }]
+    when /detach/.delimit
+      [:detach]
+    when /new (\w+)/.delimit
+      [:new, { session: $1 }]
+    when /choose session/.delimit
+      [:choose_session]
+    when /window (next|prev)/.delimit
+      [:window, { name: ({ 'next' => '+', 'prev' => '-' }[$1]) }]
+    when /window (\w+)/.delimit
+      [:window, { name: $1 }]
+    when /move pane to window (\w+)/.delimit
+      [:move_pane_to_window, { name: $1 }]
+    when /split (horizontal|vertical)/.delimit
+      [:split, { direction: $1[0] }]
+    when /move (left|down|up|right)/.delimit
+      [:move, { direction: $1 }]
+    when /resize (left|down|up|right) (\d+)/.delimit
+      [:resize, { direction: options[:direction][$1.to_sym], adjustment: $2 }]
+    when /focus (left|down|up|right)/.delimit
+      [:focus, { direction: options[:direction][$1.to_sym] }]
+    when /kill/.delimit
+      [:kill]
+    when /display panes/.delimit
+      [:display_panes]
+    when /fullscreen/.delimit
+      [:fullscreen]
+    else
+      raise "#{message}: no such command"
+    end
+
+    case command
+    when Proc
+      command.call *arguments
+    when Symbol
+      system Commands[command][:command] % arguments
+    end
+
+  end
+
+  def parse args
+    args.join(' ').split(';').map(&:strip)
+  end
+
+end
+
+
+class Regexp
+  def delimit
+    self.class.new '^' + to_s + '$'
+  end
+  def to_s
+    inspect[1..-2]
+  end
+end
+
+
+main ARGV

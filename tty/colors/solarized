@@ -1,0 +1,18 @@
+printf \e]PB657b83 # S_base00
+printf \e]PA586e75 # S_base01
+printf \e]P0073642 # S_base02
+printf \e]P62aa198 # S_cyan
+printf \e]P8002b36 # S_base03
+printf \e]P2859900 # S_green
+printf \e]P5d33682 # S_magenta
+printf \e]P1dc322f # S_red
+printf \e]PC839496 # S_base0
+printf \e]PE93a1a1 # S_base1
+printf \e]P9cb4b16 # S_orange
+printf \e]P7eee8d5 # S_base2
+printf \e]P4268bd2 # S_blue
+printf \e]P3b58900 # S_yellow
+printf \e]PFfdf6e3 # S_base3
+printf \e]PD6c71c4 # S_violet
+
+clear

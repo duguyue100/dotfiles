@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+slice = eval ARGV.join "\n"
+
+token = STDIN.read.lines.slice slice
+
+print token.kind_of?(Array) ? token.join : token

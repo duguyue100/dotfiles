@@ -1,0 +1,199 @@
+#!/usr/bin/env ruby
+#│
+#│ TODO  improve parsing implementation
+#│        – support regexp multiple line
+#│ TODO? filter captures (?<NAME:s/foo/bar/>PATTERN)
+#│
+#│ Completion
+#│ ‾‾‾‾‾‾‾‾‾‾
+#│  * fish: https://github.com/alexherbo2/dotfiles/blob/master/fish/completions/interface.fish
+#│
+#│ Thanks!
+#│ ‾‾‾‾‾‾
+#│ Thanks for testing, bug fixes, discussions and everything I forgot go out to:
+#│
+#│  * Maxime Coste (mawww)
+#│
+
+require 'thor'
+require 'yajl'
+
+# Main ├────────────────────────────────────────────────────────────────────────
+
+class Interface < Thor
+
+  desc 'usage', 'Show usage'
+  def usage
+  puts <<-EOF
+    usage: echo TEXT | interface (parse|format) FORMAT
+
+    *interface* is a declarative text/parser/emitter that can work on streams; it
+    enables you to easily separate the contents and the presention thanks to its two
+    commands 'parse' and 'format'; they can parse JSON, or generate text from JSON.
+
+    Parse
+    ‾‾‾‾‾
+    #{help :parse}
+
+    Format
+    ‾‾‾‾‾‾
+    #{help :format}
+
+    Interfacing with Kakoune
+    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+  EOF
+  end
+
+  desc 'parse FORMAT', 'Emit JSON'
+  long_desc <<-LONG_DESC
+    *parse* command converts named capture groups to JSON.
+
+    grep --recursive --with-filename --line-number /foo/i |
+
+    interface parse '(?<filename>[^:]+):(?<line>\d+):(?<column>\d+):(?<text>.+)'
+
+    input → foo.txt:91:1:foo
+            foo-bar.txt:1991:1:foo bar
+
+    output → [
+        {
+          "filename": "foo.txt",
+          "line": 19,
+          "column": 1,
+          "text": "foo"
+        },
+        {
+          "filename": "foo-bar.txt",
+          "line": 1991,
+          "column": 1,
+          "text": "foo bar"
+        }
+      ]
+  LONG_DESC
+  def parse format; encoder = Yajl::Encoder
+    print '['
+      STDIN.each_line { |line| print encoder.encode(line.scan(format.to_r).first), STDIN.eof?? '' : ',' }
+    print ']'
+  end
+
+  desc 'format FORMAT', 'Emit text'
+  long_desc <<-LONG_DESC
+    *format* command is like printf, except it supports hash list in order to
+    facilite alignment (left, right, center).
+
+    > "%{X } %{ Y}\\n" % [{:X=>:foo,:Y=>:bar},{:X=>:foobar,:Y=>:foobar}]
+    => foo       bar
+       foobar foobar
+
+     %{X}   → normal
+     %{X }  → left align
+     %{ X}  → right align
+     %{ X } → center
+
+    echo $json |
+
+    interface format '%{filename } |%{ line}│%{ column}| %{text}'\\n
+
+    input → [
+        {
+          "filename": "foo.txt",
+          "line": 19,
+          "column": 1,
+          "text": "foo"
+        },
+        {
+          "filename": "foo-bar.txt",
+          "line": 1991,
+          "column": 1,
+          "text": "foo bar"
+        }
+      ]
+
+    output → foo.txt     |  91│1| foo
+             foo-bar.txt |1991│1| foo bar
+  LONG_DESC
+  def format format; parser = Yajl::Parser.new symbolize_keys: true
+    print format % parser.parse(STDIN)
+  end
+end
+
+# Utility ├─────────────────────────────────────────────────────────────────────
+
+module Enumerable
+  def hash_map &block
+    inject({}) do |collection, object|
+      collection.merge block_given?? block.call(object) : Hash[*object]
+    end
+  end
+end
+
+class Regexp
+  OPTIONS = {
+    'x' => Regexp::EXTENDED,
+    'i' => Regexp::IGNORECASE,
+    'm' => Regexp::MULTILINE,
+    'n' => Regexp::NOENCODING,
+  }
+end
+
+class String
+  alias :old_scan :scan
+  def scan regexp
+    if regexp.names.empty?
+      old_scan(regexp)
+    else
+      old_scan(regexp).collect { |match| Hash[regexp.names.zip match] }
+    end
+  end
+  def % token
+    if token.kind_of? Array
+      sprintf self, *token
+    else
+      sprintf self, token
+    end
+  end
+  def to_r
+    Regexp.new *begin # FIXME
+    Regexp.new *begin
+      scan(%r[/(?<string>.+)/(?<options>[#{Regexp::OPTIONS.keys.join}]+)]).map do |match|
+        [ match['string'], match['options'].chars.uniq.inject(0) { |kcode, option| kcode + Regexp::OPTIONS[option] } ]
+      end.first
+    end rescue
+      [self]
+    end
+  end
+end
+
+module Kernel
+  alias :old_sprintf :sprintf
+  def sprintf *args
+
+    pattern = /(?<!%)%\{( )?(\w+)( )?\}/
+
+    old_sprintf_format, old_sprintf_args = args[0], args[1..-1]
+
+    old_format = old_sprintf_format.gsub pattern, '%{\2}'
+
+    if not old_sprintf_args.first.kind_of? Hash or old_sprintf_args.length.eql? 1
+      return old_sprintf old_format, *old_sprintf_args
+    end
+
+    format, list = old_sprintf_format, old_sprintf_args
+
+    length = list.first.keys.map do |key|
+      [key, list.collect { |item| item[key].to_s.length }.max]
+    end.hash_map
+
+    list.map do |hash|
+      format.gsub(pattern) {
+        rjust, field, ljust = Regexp.last_match[1..3]; center = (ljust and rjust); field = field.to_sym
+
+        formater = center ? :center : rjust ? :rjust : ljust ? :ljust : nil
+
+        ! formater ? hash[field] : hash[field].send(formater, length[field]) }
+    end.join
+  end
+end
+
+
+Interface.start ARGV

@@ -1,0 +1,149 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require 'shellwords'
+
+# Main ├────────────────────────────────────────────────────────────────────────
+
+class Sync < Thor
+
+  def help *command
+
+    puts 'Synchronize keyboard and mouse inputs between windows'
+
+    super *command
+
+  end
+
+  desc 'select', 'print ID of selected windows'
+
+  long_desc <<-LONG_DESC
+    Print ID of selected windows.
+
+    Workaround
+
+    There is no way to escape xdotool from window selection.
+    To escape the loop, select the same window two times.
+  LONG_DESC
+
+  def select
+
+    windows_id = []
+
+    loop do
+
+      window_id = `xdotool selectwindow`.to_i
+
+      break if window_id == windows_id.last
+
+      windows_id.push window_id
+
+    end
+
+    puts windows_id
+
+  end
+
+  desc 'key', 'synchronize keys'
+
+  long_desc <<-LONG_DESC
+    Synchronize keys.
+
+    ❱ http://semicomplete.com/projects/xdotool/xdotool.xhtml#keyboard_commands
+  LONG_DESC
+
+  option :keys,    required: true, type: :array
+  option :windows, required: true, type: :array
+
+  def key
+
+    keys       = options[:keys]
+    windows_id = options[:windows].map &:to_i
+
+    windows_id.each do |window_id|
+      `xdotool key --window #{window_id} #{keys.shelljoin}`
+    end
+
+  end
+
+  desc 'click', 'synchronize mouse clicks'
+
+  long_desc <<-LONG_DESC
+    Synchronize mouse clicks.
+
+    Buttons
+
+    1: left
+    2: middle
+    3: right
+
+    ❱ http://semicomplete.com/projects/xdotool/xdotool.xhtml#mouse_commands
+  LONG_DESC
+
+  option :button,  required: true, type: :string
+  option :windows, required: true, type: :array
+
+  def click
+
+    button     = options[:button]
+    windows_id = options[:windows].map &:to_i
+
+    window_id = `xdotool getactivewindow`.to_i
+
+    window_geometry = (`xdotool getwindowgeometry #{window_id}`.scan /Position: (?<x>\d+),(?<y>\d+)(.*)Geometry: (?<width>\d+)x(?<height>\d+)/m).first.hash_map { |key, value| { key.to_sym => value.to_f } }
+
+    mouse_location = (`xdotool getmouselocation`.scan /x:(?<x>\d+) y:(?<y>\d+)/).first.hash_map { |key, value| { key.to_sym => value.to_f } }
+
+    window_mouse_location = {
+      x: mouse_location[:x] - window_geometry[:x],
+      y: mouse_location[:y] - window_geometry[:y],
+    }
+
+    coefficient = {
+      x: window_mouse_location[:x] / window_geometry[:width],
+      y: window_mouse_location[:y] / window_geometry[:height],
+    }
+
+    windows_id.each do |window_id|
+
+      window_geometry = (`xdotool getwindowgeometry #{window_id}`.scan /Geometry: (?<width>\d+)x(?<height>\d+)/).first.hash_map { |key, value| { key.to_sym => value.to_f } }
+
+      x = window_geometry[:width]  * coefficient[:x]
+      y = window_geometry[:height] * coefficient[:y]
+
+      `xdotool mousemove --window #{window_id} #{x} #{y}`
+      `xdotool click --window #{window_id} #{button}`
+
+    end
+
+    # Initial setting
+    `xdotool windowactivate #{window_id}`
+    `xdotool mousemove #{mouse_location[:x]} #{mouse_location[:y]}`
+
+  end
+
+end
+
+# Utility ├─────────────────────────────────────────────────────────────────────
+
+module Enumerable
+  def hash_map &block
+    inject({}) do |collection, object|
+      collection.merge block_given?? block.call(object) : Hash[*object]
+    end
+  end
+end
+
+class String
+  alias :old_scan :scan
+  def scan regexp
+    if regexp.names.empty?
+      old_scan(regexp)
+    else
+      old_scan(regexp).collect { |match| Hash[regexp.names.zip match] }
+    end
+  end
+end
+
+
+Sync.start ARGV

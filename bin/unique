@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+FILE = ARGV.empty?? STDIN : (File.open ARGV.first)
+
+puts FILE.readlines.uniq.join

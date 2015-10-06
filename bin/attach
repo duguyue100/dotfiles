@@ -1,0 +1,55 @@
+#!/bin/sh
+
+usage='attach or create new session
+
+usage: attach (DIR|SOCKET|COMMAND)
+
+ * when DIR     :: list attachable sockets
+ * when SOCKET  :: attach to socket
+ * when COMMAND :: attach or create new session'
+
+[ $# = 0    ] && { echo "$usage"; exit 1; }
+[ $1 = help ] && { echo "$usage"; exit 0; }
+
+# Main ├────────────────────────────────────────────────────────────────────────
+
+main() { token=$1; shift; arguments=$@
+
+  POOL=$HOME/.attach
+
+  [ -d $token ] && [ -d $POOL``$(realpath $token) ] &&
+  {
+    list $token
+  } ||
+  {
+    [ -S $token ] && attach $token || new $token $arguments
+  }
+
+}
+
+# Commands ├────────────────────────────────────────────────────────────────────
+
+new() { program=$1; shift; arguments=$@
+
+  id=$(printf %.7s $(echo $program``$arguments | sha256sum))
+
+  socket=$POOL``$PWD/$program-$id
+
+  # Ensure socket directory exists
+  mkdir --parents $(dirname $socket)
+
+  # Attach or create new session
+  dtach -A $socket $program $arguments
+
+}
+
+attach() { socket=$1
+  dtach -a $socket
+}
+
+list() { path=$1
+  find $POOL``$(realpath $path) -type s
+}
+
+
+main $@

@@ -1,0 +1,6 @@
+# bpython config file
+#
+# Please see http://docs.bpython-interpreter.org/configuration.html for a complete reference!
+
+[general]
+    color_scheme = solarized

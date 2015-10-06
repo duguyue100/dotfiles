@@ -1,0 +1,26 @@
+#!/bin/bash
+
+usage='git gc-all-ferocious
+
+Collect unused objects and optimize the local repository
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+git_dir=$(git rev-parse --git-dir 2>/dev/null)
+
+[[ $git_dir ]] || exit 1
+
+rm --force --recursive $git_dir/*_HEAD
+rm --force --recursive $git_dir/logs
+rm --force --recursive $git_dir/refs/original
+rm --force --recursive $git_dir/refs/remotes
+
+git for-each-ref --format='%(refname)' refs/original | xargs --max-args=1 --no-run-if-empty git update-ref -d
+
+git -c gc.reflogExpire=0                                                       \
+    -c gc.reflogExpireUnreachable=0                                            \
+    -c gc.rerereresolved=0                                                     \
+    -c gc.rerereunresolved=0                                                   \
+    -c gc.pruneExpire=now                                                      \
+gc

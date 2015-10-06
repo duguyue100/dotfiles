@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+files = ARGV
+
+puts ([STDIN.tty?? [] : STDIN.read.lines] + files.map { |file| File.open(file).read.lines }).reduce(:+).reverse.join

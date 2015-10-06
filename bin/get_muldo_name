@@ -1,0 +1,3 @@
+#!/bin/sh
+
+date +%s | sha512sum | base64 | sed --regexp-extended s/[0-9]+//g | head --bytes 10

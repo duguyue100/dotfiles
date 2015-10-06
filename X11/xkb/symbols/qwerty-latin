@@ -1,0 +1,206 @@
+// QWERTY-Latin keyboard layout
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// TypeMatrix 2030
+// normal layer:
+// ╔════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╗
+// ║esc.║ F1 ║ F2 ║ F3 ║ F4 ║ F5 ║del ║ F6 ║ F7 ║ F8 ║ F9 ║ F10║ F11║ F12║num.║
+// ╚════╩════╩════╩════╩════╩════╣ ins╠════╩════╩════╩════╩════╩════╩════╬════╣
+// │ ~ ☠│ ! ¡│ @ ‘│ # ’│ $ £│ %  ╠════╣ ^  │ &  │ * ×│ (  │ ) ∅│ _ ‾│ + ±║calc║
+// │ ` ☠│ 1 „│ 2 “│ 3 ”│ 4 €│ 5  ║ ⌫  ║ 6 ¬│ 7  │ 8 ∞│ 9  │ 0 °│ - −│ = ≠║    ║
+// ╔════╗────┼────┼────┼────┼────║    ║────┼────┼────┼────┼────┼────┼────╠════╣
+// ║ ↹  ║ Q  │ W  │ E  │ R –│ T  ║    ║ Y  │ U  │ I  │ O  │ P  │ { ‹│ } ›║mail║
+// ║    ║   æ│   é│   è│   ‑│    ║    ║   ✓│   ù│   î│   œ│   §│ [ «│ ] »║   ⇤║
+// ╠════╣────┼────┼────┼────┼────╠════╣────┼────┼────┼────┼────┼────╔════╬════╣
+// ║ ⇧  ║ A  │ S ☠│ D ☠│ F ☠│ G ☠║ ⏎  ║ H ↙│ J ↖│ K ↗│ L ↘│ : ↕│ " ″║ ⇧  ║ ⇪  ║
+// ║    ║   à│   ´│   ^│   ¨│   ˙║    ║   ←│   ↓│   ↑│   →│ ☠ ↔│ ' ′║    ║  AC║
+// ║    ║────┼────┼────┼─══─┼────║    ║────┼─══─┼────┼────┼────┼────║    ╠════╣
+// ║    ║ Z  │ X  │ C  │ V  │ B  ║    ║ N  │ M  │ ; •│ :  │ ? †│ | ¦║    ║www ║
+// ║    ║    │    │   ç│    │    ║   ‐║   ✗│    │ , ·│ . …│ / ÷│ \  ║   +║   ⌫║
+// ╠════╬════╦════╦════╦════╧════╩════╩════╧════╦════╦════╦════╦════╬════╬════╣
+// ║ctrl║    ║app ║shuf║ :                      ║desk║ ⇱  ║ ⇑  ║ ⇲  ║ctrl║ ⇞  ║
+// ║    ║cut ║copy║past║                        ║    ║    ║    ║    ║    ║  bk║
+// ╠════╬════╩═╦══╩════╣ ␣ space                ╠════╬════╬════╬════╣    ╠════╣
+// ║fn  ║start ║alt    ╠════════════════════════╣alt ║ ⇐  ║ ⇓  ║ ⇒  ║    ║ ⇟  ║
+// ║    ║      ║       ║                        ║ gr ║    ║    ║    ║entr║  fw║
+// ╚════╩══════╩═══════╝                        ╚════╩════╩════╩════╩════╩════╝
+
+// altgr layer:
+// ╔════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╗
+// ║esc.║ F1 ║ F2 ║ F3 ║ F4 ║ F5 ║del ║ F6 ║ F7 ║ F8 ║ F9 ║ F10║ F11║ F12║num.║
+// ╚════╩════╩════╩════╩════╩════╣ ins╠════╩════╩════╩════╩════╩════╩════╬════╣
+// │    │    │    │    │    │    ╠════╣    │    │    │    │    │    │    ║calc║
+// │ ᵉ  │    │    │ ♯  │    │    ║ ⌫  ║    │    │    │    │    │    │    ║    ║
+// ╔════╗────┼────┼────┼────┼────║    ║────┼────┼────┼────┼────┼────┼────╠════╣
+// ║ ↹  ║ ≃  │ ≤  │ ≥  │    │    ║    ║    │    │    │    │    │〖  │ 〗 ║mail║
+// ║    ║ ~  │ <  │ >  │ —  │    ║    ║    │    │    │    │    │【  │ 】 ║   ⇤║
+// ╠════╣────┼────┼────┼────┼────╠════╣────┼────┼────┼────┼────┼────╔════╬════╣
+// ║ ⇧  ║    │    │    │ ⚥  │    ║ ⏎  ║    │    │    │    │    │    ║ ⇧  ║ ⇪  ║
+// ║    ║    │    │    │ ♀  │ ⚲  ║    ║ ❰  │    │    │ ❱  │    │    ║    ║  AC║
+// ║    ║────┼────┼────┼─══─┼────║    ║────┼─══─┼────┼────┼────┼────║    ╠════╣
+// ║    ║    │    │    │    │    ║    ║    │ ⚥  │    │    │    │    ║    ║www ║
+// ║    ║    │    │    │    │ ☣  ║    ║ ☢  │ ♂  │    │    │    │    ║   +║   ⌫║
+// ╠════╬════╦════╦════╦════╧════╩════╩════╧════╦════╦════╦════╦════╬════╬════╣
+// ║ctrl║    ║app ║shuf║                        ║desk║ ⇱  ║ ⇑  ║ ⇲  ║ctrl║ ⇞  ║
+// ║    ║cut ║copy║past║                        ║    ║    ║    ║    ║    ║  bk║
+// ╠════╬════╩═╦══╩════╣ ⍽ non breaking space   ╠════╬════╬════╬════╣    ╠════╣
+// ║fn  ║start ║alt    ╠════════════════════════╣alt ║ ⇐  ║ ⇓  ║ ⇒  ║    ║ ⇟  ║
+// ║    ║      ║       ║                        ║ gr ║    ║    ║    ║entr║  fw║
+// ╚════╩══════╩═══════╝                        ╚════╩════╩════╩════╩════╩════╝
+
+partial alphanumeric_keys modifier_keys
+xkb_symbols "basic" {
+  include "pc"
+
+  // row(alphanumeric) ─────────────────────────────────────────────────────────
+
+  key <TLDE> {
+    type[group1] = "FOUR_LEVEL", [ grave, asciitilde, dead_grave, dead_tilde   ],
+    type[group2] =  "TWO_LEVEL", [ U1D49                                       ]};
+  key <AE01> {
+    type[group1] = "FOUR_LEVEL", [ 1, exclam, doublelowquotemark, exclamdown   ]};
+  key <AE02> {
+    type[group1] = "FOUR_LEVEL", [ 2, at, leftdoublequotemark, leftsinglequotemark ]};
+  key <AE03> {
+    type[group1] = "FOUR_LEVEL", [ 3, numbersign, rightdoublequotemark, rightsinglequotemark ],
+    type[group2] =  "TWO_LEVEL", [ U266F                                                     ]};
+  key <AE04> {
+    type[group1] = "FOUR_LEVEL", [ 4, dollar, EuroSign, sterling               ]};
+  key <AE05> {
+    type[group1] = "FOUR_LEVEL", [ 5, percent                                  ]};
+  key <AE06> {
+    type[group1] = "FOUR_LEVEL", [ 6, asciicircum, notsign                     ]};
+  key <AE07> {
+    type[group1] = "FOUR_LEVEL", [ 7, ampersand                                ]};
+  key <AE08> {
+    type[group1] = "FOUR_LEVEL", [ 8, asterisk, infinity, UD7                  ]};
+  key <AE09> {
+    type[group1] = "FOUR_LEVEL", [ 9, parenleft                                ]};
+  key <AE10> {
+    type[group1] = "FOUR_LEVEL", [ 0, parenright, degree, U2205                ]};
+
+  // row(1) ────────────────────────────────────────────────────────────────────
+
+  key <AD01> {
+    type[group1] = "FOUR_LEVEL", [ q, Q, ae, AE                                ],
+    type[group2] =  "TWO_LEVEL", [ asciitilde, U2243                           ]};
+  key <AD02> {
+    type[group1] = "FOUR_LEVEL", [ w, W, eacute, Eacute                        ],
+    type[group2] =  "TWO_LEVEL", [ less, lessthanequal                         ]};
+  key <AD03> {
+    type[group1] = "FOUR_LEVEL", [ e, E, egrave, Egrave                        ],
+    type[group2] =  "TWO_LEVEL", [ greater, greaterthanequal                   ]};
+  key <AD04> {
+    type[group1] = "FOUR_LEVEL", [ r, R, U2011, U2013                          ],
+    type[group2] =  "TWO_LEVEL", [ U2014                                       ]};
+  key <AD05> {
+    type[group1] = "FOUR_LEVEL", [ t, T                                        ]};
+  key <AD06> {
+    type[group1] = "FOUR_LEVEL", [ y, Y, U2713                                 ]};
+  key <AD07> {
+    type[group1] = "FOUR_LEVEL", [ u, U, ugrave, Ugrave                        ]};
+  key <AD08> {
+    type[group1] = "FOUR_LEVEL", [ i, I, icircumflex, idiaeresis               ]};
+  key <AD09> {
+    type[group1] = "FOUR_LEVEL", [ o, O, oe, OE                                ]};
+  key <AD10> {
+    type[group1] = "FOUR_LEVEL", [ p, P, section, paragraph                    ]};
+
+  // row(2) ────────────────────────────────────────────────────────────────────
+
+  key <AC01> {
+    type[group1] = "FOUR_LEVEL", [ a, A, agrave, Agrave                        ]};
+  key <AC02> {
+    type[group1] = "FOUR_LEVEL", [ s, S, dead_acute                            ]};
+  key <AC03> {
+    type[group1] = "FOUR_LEVEL", [ d, D, dead_circumflex                       ]};
+  key <AC04> {
+    type[group1] = "FOUR_LEVEL", [ f, F, dead_diaeresis                        ],
+    type[group2] =  "TWO_LEVEL", [ U2640, U26A5                                ]};
+  key <AC05> {
+    type[group1] = "FOUR_LEVEL", [ g, G, dead_abovedot                         ],
+    type[group2] =  "TWO_LEVEL", [ U26B2                                       ]};
+  key <AC06> {
+    type[group1] = "FOUR_LEVEL", [ h, H, leftarrow, U2199                      ],
+    type[group2] =  "TWO_LEVEL", [ U2770                                       ]};
+  key <AC07> {
+    type[group1] = "FOUR_LEVEL", [ j, J, downarrow, U2196                      ]};
+  key <AC08> {
+    type[group1] = "FOUR_LEVEL", [ k, K, uparrow, U2197                        ]};
+  key <AC09> {
+    type[group1] = "FOUR_LEVEL", [ l, L, rightarrow, U2198                     ],
+    type[group2] =  "TWO_LEVEL", [ U2771                                       ]};
+  key <AC10> {
+    type[group1] = "FOUR_LEVEL", [ ISO_Level3_Latch, colon, U2194, U2195       ]};
+
+  // row(3) ────────────────────────────────────────────────────────────────────
+
+  key <AB01> {
+    type[group1] = "FOUR_LEVEL", [ z, Z                                        ]};
+  key <AB02> {
+    type[group1] = "FOUR_LEVEL", [ x, X                                        ]};
+  key <AB03> {
+    type[group1] = "FOUR_LEVEL", [ c, C, ccedilla, Ccedilla                    ]};
+  key <AB04> {
+    type[group1] = "FOUR_LEVEL", [ v, V                                        ]};
+  key <AB05> {
+    type[group1] = "FOUR_LEVEL", [ b, B                                        ],
+    type[group2] =  "TWO_LEVEL", [ U2623                                       ]};
+  key <AB06> {
+    type[group1] = "FOUR_LEVEL", [ n, N, U2717                                 ],
+    type[group2] =  "TWO_LEVEL", [ U2622                                       ]};
+  key <AB07> {
+    type[group1] = "FOUR_LEVEL", [ m, M                                        ],
+    type[group2] =  "TWO_LEVEL", [ U2642, U26A5                                ]};
+  key <AB08> {
+    type[group1] = "FOUR_LEVEL", [ comma, semicolon, U00B7, U2022              ]};
+  key <AB09> {
+    type[group1] = "FOUR_LEVEL", [ period, colon, ellipsis                     ]};
+  key <AB10> {
+    type[group1] = "FOUR_LEVEL", [ slash, question, division, dagger           ]};
+
+  // ───────────────────────────────────────────────────────────────────────────
+
+  key <AE11> {
+    type[group1] = "FOUR_LEVEL", [ minus, underscore, U2212, U203E             ]};
+  key <AE12> {
+    type[group1] = "FOUR_LEVEL", [ equal, plus, notequal, plusminus            ]};
+  key <AD11> {
+    type[group1] = "FOUR_LEVEL", [ bracketleft, braceleft, guillemotleft, U2039 ],
+    type[group2] =  "TWO_LEVEL", [ U3010, U3016                                 ]};
+  key <AD12> {
+    type[group1] = "FOUR_LEVEL", [ bracketright, braceright, guillemotright, U203A ],
+    type[group2] =  "TWO_LEVEL", [ U3011, U3017                                    ]};
+  key <AC11> {
+    type[group1] = "FOUR_LEVEL", [ apostrophe, quotedbl, U2032, U2033              ]};
+  key <BKSL> {
+    type[group1] = "FOUR_LEVEL", [ backslash, bar, VoidSymbol, brokenbar       ]};
+  key <SPCE> {
+    type[group1] = "FOUR_LEVEL", [ space, colon, rightsinglequotemark          ],
+    type[group2] =  "TWO_LEVEL", [ nobreakspace, U2423, U237D                  ]};
+  key <BKSP> {
+    type[group1] = "FOUR_LEVEL", [ BackSpace, VoidSymbol, U232B                ]};
+  key <RTRN> {
+    type[group1] = "FOUR_LEVEL", [ Return, U2010, U23CE                        ]};
+  key <TAB>  {
+    type[group1] = "FOUR_LEVEL", [ Tab, VoidSymbol, U21B9                      ]};
+  key <UP> {
+    type[group1] = "FOUR_LEVEL", [ Up, VoidSymbol, U21D1                       ]};
+  key <DOWN> {
+    type[group1] = "FOUR_LEVEL", [ Down, VoidSymbol, U21D3                     ]};
+  key <LEFT>  {
+    type[group1] = "FOUR_LEVEL", [ Left, VoidSymbol, U21D0                     ]};
+  key <RIGH>  {
+    type[group1] = "FOUR_LEVEL", [ Right, VoidSymbol, U212D                    ]};
+  key <HOME>  {
+    type[group1] = "FOUR_LEVEL", [ Home, VoidSymbol, U21F1                     ]};
+  key <END>  {
+    type[group1] = "FOUR_LEVEL", [ End, VoidSymbol, U21F2                      ]};
+  key <PGUP>  {
+    type[group1] = "FOUR_LEVEL", [ Prior, VoidSymbol, U21DE                    ]};
+  key <PGDN>  {
+    type[group1] = "FOUR_LEVEL", [ Next, VoidSymbol, U21Df                     ]};
+
+  // ───────────────────────────────────────────────────────────────────────────
+
+  key <RALT> {
+    [ VoidSymbol ], actions = [ SetGroup(group=2) ]                             }; };

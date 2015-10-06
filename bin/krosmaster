@@ -1,0 +1,6 @@
+#!/bin/sh
+
+wine start 'C:\Program Files\Krosmaster Arena\game\Krosmaster'
+
+# Note: Something went wrong with Krosmaster updater, hence we run Krosmaster application
+# directly instead of Krosmaster launcher.

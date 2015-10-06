@@ -1,0 +1,99 @@
+[user]
+    name  = Alex Leferry 2>
+    email = alexherbo2@gmail.com
+
+[core]
+    pager = /usr/bin/less --no-init --quit-if-one-screen
+
+[init]
+    templatedir = ~/.git
+
+[alias]
+
+    w  = add
+    u  = update
+    b  = branch
+    d  = diff
+    ci = commit
+    cm = commit -m
+    cd = commit-date
+    co = checkout
+    st = status
+
+    ; Clone recursively
+    clone = clone --recursive
+
+    ; Logs
+
+    l   = log-pretty oneline=18
+    ll  = log-pretty oneline
+    gl  = log-pretty graph=12
+    gll = log-pretty graph
+
+    what  = what-the-hell-just-happened
+
+    ; List
+
+    tags     = tag    --list
+    branches = branch --all
+    remotes  = remote --verbose
+
+    ; Fork
+
+    fork = checkout -b
+
+    ; Fetch / Merge
+    ; Explicit is better than implicit.  If we want to merge
+    ; we should do so ourselves.
+
+    pull    = pull  --ff-only
+    up      = merge --ff-only
+    join    = merge --no-ff
+    ; •     │    o
+    ;  \    │    o
+    ;   o   │    o
+    ;   o   │    •
+    ;   o   │    •
+    ;  /    │
+    ; •     │
+    ; •     │
+    ; no-ff │ ff-only
+
+    ; [o]rigin [u]pstream
+
+    fo = fetch origin
+    fu = fetch upstream
+
+    jo = !git join origin/$(git-current-branch)
+    ju = !git join upstream/$(git-current-branch)
+    uo = !git up   origin/$(git-current-branch)
+    uu = !git up   upstream/$(git-current-branch)
+
+    ; Branches
+
+    delete-remote-branch                    = push origin      --delete
+    delete-local-branch                     = branch            -D
+    delete-local-reference-to-remote-branch = branch --remotes --delete
+
+    ; Commit
+
+    amend = commit --amend
+
+    ; Undo
+
+    commit-point = reset --hard
+    discard      = reset --hard HEAD
+    undo         = reset --soft
+    unstage      = reset --soft HEAD
+
+    ; Rebase
+
+    r = !git rebase-interactive
+
+[push]
+    default = current
+
+[merge]
+    ; Three-way merge : Merging from a common ancestor
+    ; ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    conflictstyle = diff3

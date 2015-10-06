@@ -1,0 +1,22 @@
+set main-view = author:abbreviated date:display=relative id:display=true commit-title:graph=true
+
+bind generic s view-status
+
+bind generic g move-first-line
+bind generic G move-last-line
+
+# Copy commit ID to clipboard
+bind generic ` !@sh -c 'printf %.7s %(commit) | xsel --clipboard'
+bind generic ~ !@sh -c 'printf      %(commit) | xsel --clipboard'
+
+# Amend the last commit
+bind generic A !git commit --amend
+
+# Interactive add for fine-grained staging of file content
+bind generic I !git add --interactive %(file)
+
+# Interactive rebasing
+bind generic R !git rebase-interactive edit %(commit)
+
+bind generic p !git pull
+bind generic P !git push

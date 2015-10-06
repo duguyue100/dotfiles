@@ -1,0 +1,14 @@
+#!/bin/bash
+
+usage='usage: git patch [GIT_FORMAT_PATCH_ARGS...]
+
+example: git patch -<number_of_commits> | gist
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+git format-patch     \
+  --find-renames      \
+  --find-copies        \
+  --find-copies-harder  \
+  --stdout $@

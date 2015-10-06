@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'chronic'
+
+usage='usage: at TIME
+
+Pause until TIME is passed.
+
+Example
+‾‾‾‾‾‾‾
+$ at 08:00; mpv music/wake_up.ogg
+'
+
+(STDERR.puts usage; exit(1)) if ARGV.empty?
+
+(STDOUT.puts usage; exit(0)) if ARGV.index 'help'
+
+class Time
+
+  def past?
+    self < self.class.now
+  end
+
+end
+
+text = ARGV.join ' '
+
+time = Chronic.parse text
+
+exit(1) unless time
+
+puts time
+
+sleep(1) until time.past?

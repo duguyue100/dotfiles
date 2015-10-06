@@ -1,0 +1,11 @@
+[DEFAULT]
+lang = fr
+lang-in-name = no
+plugins = 
+
+[LegendasTV]
+user = 
+pass = 
+unrarpath = 
+supportedsubtitleextensions = 
+

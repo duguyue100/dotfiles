@@ -1,0 +1,47 @@
+general {
+  interval       = 10
+  color_good     = '#859900'
+  color_degraded = '#b58900'
+  color_bad      = '#dc322f'
+}
+
+order += 'disk /'
+order += 'ethernet enp8s0'
+order += 'wireless wlp0s20u2'
+order += 'battery 1'
+order += 'volume master'
+order += 'time'
+
+disk / {
+  format = '⛃ %avail'
+}
+
+ethernet enp8s0 {
+  format_up   = '⌥'
+  format_down = ''
+}
+
+wireless wlp0s20u2 {
+  format_up   = '✈'
+  format_down = ''
+}
+
+battery 1 {
+  format                   = '%status %percentage'
+  format_down              = ''
+  status_chr               = '⚇'
+  status_bat               = '⚡'
+  status_full              = '☻'
+  integer_battery_capacity = true
+  threshold_type           = 'percentage'
+  low_threshold            = 10
+}
+
+volume master {
+  format       = '♪ %volume'
+  format_muted = '♪ %volume'
+}
+
+time {
+  format = '%a %-d %b %-I:%M %p'
+}

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+usage='Kakoune *man*'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+/usr/bin/man $@ |
+
+kak -e 'set buffer filetype man
+        hook buffer NormalKey (q)|<esc> quit'

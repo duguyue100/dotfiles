@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'yajl'
+require 'yaml'
+
+print Yajl::Parser.parse(STDIN.read).to_yaml

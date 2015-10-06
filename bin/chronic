@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+require 'chronic'
+
+# Main ├────────────────────────────────────────────────────────────────────────
+
+def main
+
+  usage='usage:
+    chronic TEXT +FORMAT
+    echo TEXT | chronic +FORMAT
+    echo NOW | chronic TEXT +FORMAT
+
+    Chronic is a natural language date / time parser in command-line.
+
+    Examples
+    ‾‾‾‾‾‾‾‾
+    $ chronic yesterday +%F
+    > 2016-02-29
+
+    $ chronic today +%F
+    > 2016-03-01
+
+    $ chronic tomorrow +%F
+    > 2016-03-02
+
+    $ echo today | chronic +%F
+    > 2016-03-01
+
+    $ chronic yesterday +%F | chronic tomorrow +%F
+    > 2016-03-01'.gsub /^ {4}/, ''
+
+  (STDERR.puts usage; exit(1)) if ARGV.empty?
+
+  (STDOUT.puts usage; exit(0)) if ARGV.index 'help'
+
+  text = ARGV.reject { |arg| arg.chars.first.eql? '+' }.as { |object| object.empty?? nil : object.join(' ') }
+
+  format = ARGV.find { |arg| arg.chars.first.eql? '+' }&.slice(1..-1)
+
+  arguments = if text and format and STDIN.tty? # chronic today +%F
+    [text]
+  elsif not text and format and not STDIN.tty? # echo today | chronic +%F
+    [STDIN.read]
+  elsif text and format and not STDIN.tty? # chronic yesterday +%F | chronic tomorrow +%F
+    [text, now: (Chronic.parse STDIN.read)]
+  else
+    []
+  end
+
+  exit(1) if arguments.empty?
+
+  time = Chronic.parse *arguments
+
+  exit(1) unless time
+
+  print time.strftime format
+
+end
+
+# Utility ├─────────────────────────────────────────────────────────────────────
+
+class Object
+  def as
+    yield self
+  end
+end
+
+
+main

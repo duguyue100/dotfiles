@@ -1,0 +1,12 @@
+#!/bin/bash
+
+EDITOR=touch
+
+usage='usage: git update
+
+non interactive amend commit.
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+git commit --amend $@

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+usage='Kakoune *less*'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+kak -e 'hook buffer NormalKey (q)|<esc> quit' $@

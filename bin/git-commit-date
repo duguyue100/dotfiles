@@ -1,0 +1,5 @@
+#!/bin/sh
+
+date=$(date +'%a %h %-d %H:%M:%S %Y %z')
+
+git commit --message="$date"

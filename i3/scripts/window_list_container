@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'gir_ffi'
+require 'shellwords'
+
+i3 = I3ipc::Connection.new nil if GirFFI.setup :i3ipc
+
+windows = i3.get_tree.leaves
+
+window_list_container = ( windows.select { |window| window.focused } ).first.parent.nodes.collect { |window| window.window }
+
+print window_list_container.shelljoin

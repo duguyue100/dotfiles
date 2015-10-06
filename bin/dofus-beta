@@ -1,0 +1,6 @@
+#!/bin/sh
+
+wine start 'C:\Program Files\Dofus Beta\app\Dofus'
+
+# Note: Something went wrong with Dofus updater, hence we run Dofus application
+# directly instead of Dofus launcher.

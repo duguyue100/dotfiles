@@ -1,0 +1,35 @@
+#!/bin/bash
+
+usage='usage: clone [null] SOURCE... DEST [RSYNC_ARGS...]
+
+*clone* accepts some switches:
+
+ * null:   does no backup
+ * silent: be quiet
+'
+
+[[ $# =  0            ]] && { echo $usage; exit 1; }
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit 0; }
+
+timestamp=$(date +%s)
+
+trash=~/.cache/trash/$timestamp
+
+# Ensure $trash exists
+mkdir --parents $trash
+
+# NULL switch
+[[ $1 = null   ]] && { shift; null=1;   }
+
+# SILENT switch
+[[ $1 = silent ]] && { shift; silent=1; }
+
+# rsync> This rsync lacks old-style --compress due to its external zlib.  Try -zz.
+#          ↘
+rsync "$@"  -zz                                                                \
+      --archive                                                                \
+      --compress   $( [[ $silent ]] || echo                                    \
+      --info=progress2                     )                                   \
+      --delete     $( [[ $null   ]] || echo                                    \
+      --backup                                                                 \
+      --backup-dir=$(realpath $trash))

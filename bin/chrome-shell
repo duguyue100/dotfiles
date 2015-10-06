@@ -1,0 +1,9 @@
+#!/bin/sh
+
+json=$(cat /dev/stdin)
+
+command=$(echo $json | jq .command)
+
+output=$(eval $(echo $command))
+
+jq -n --arg response "$output" '{ response: $response }'

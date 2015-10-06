@@ -1,0 +1,7 @@
+# rTorrent
+
+# Symlink your torrents into rtorrent/
+directory = .rtorrent/data
+
+# Where store session?
+session = .rtorrent/session

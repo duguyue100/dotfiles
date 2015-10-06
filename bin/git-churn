@@ -1,0 +1,21 @@
+#!/bin/bash
+
+usage='usage: git churn [GIT_LOG_ARGS...]
+
+example:
+
+Show churn for whole repo:           git churn
+Show churn for specific directories: git churn path/to/dir
+Show churn for a time range:         git churn --since="1 month ago"
+
+by Corey Haines
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+git log --all -M -C --name-only --format=format: $@      |
+grep --invert-match ^$                                   |
+sort                                                     |
+uniq --count                                             |
+awk 'BEGIN { print "count\tfile" } { print $1 "\t" $2 }' |
+sort --numeric-sort

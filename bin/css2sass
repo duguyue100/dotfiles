@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'sass/css'
+
+print Sass::CSS.new(STDIN.read).render :sass

@@ -1,0 +1,32 @@
+#!/usr/bin/env fish
+
+set cache $XDG_CACHE_HOME/(basename (status --current-filename))
+
+# Ensure cache exists
+mkdir --parents $cache
+
+set command $argv
+
+if test ! $command
+
+  # Create/Update DB
+  # Note that DB is considered out of date when its file is older
+  # ‾‾‾‾ than the ones in PATH.
+  if test ! -e $cache/db; or stest -q -n $cache/db -l -f -x $PATH
+    stest -l -f -x $PATH | sort | unique > $cache/db
+  end
+
+  # MRU commands (FIXME) MRU should not exist in file system
+  reverse $cache/history > $cache/mru
+
+  # Filter commands
+  cat $cache/mru $cache/db | unique
+
+else
+
+  # Update history
+  echo $command >> $cache/history
+
+  eval $command
+
+end

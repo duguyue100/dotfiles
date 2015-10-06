@@ -1,0 +1,15 @@
+#!/bin/bash
+
+usage='usage: cave update [CAVE_RESOLVE_WORLD_ARGS...]
+
+Update Paludis world.
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+cave resolve world $@                \
+  --complete                          \
+  --preserve-world                     \
+  --continue-on-failure if-satisfied    \
+  --keep                if-same-metadata \
+  --keep-targets        if-same-metadata

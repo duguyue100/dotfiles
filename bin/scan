@@ -1,0 +1,8 @@
+#!/bin/sh
+
+execute() { $@ 2>/dev/null; }
+
+# Git
+(execute git ls-files)                                                        ||
+
+(execute find -L -type f)

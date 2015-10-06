@@ -1,0 +1,10 @@
+#!/bin/sh
+
+command=$1; shift
+
+if type cave-$command &>/dev/null
+
+then cave-$command $@
+else cave $command $@
+
+fi

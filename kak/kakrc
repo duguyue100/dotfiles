@@ -1,0 +1,323 @@
+# Preamble ├────────────────────────────────────────────────────────────────────
+
+colorscheme solarized
+
+# I like Solarized but with dark background
+
+face Default        default,default
+face MenuBackground default,black
+face MenuForeground black,default
+face MenuInfo       default
+face StatusLine     default,black
+face Information    default,black
+face LineNumbers    default,rgb:111111
+face BufferPadding  default,default
+
+# Basic options ├───────────────────────────────────────────────────────────────
+
+set global tabstop     4
+set global indentwidth 4
+
+set global scrolloff 1,5
+
+set global makecmd 'make --jobs=8'
+set global grepcmd 'ag --filename --column'
+
+# Commands ├────────────────────────────────────────────────────────────────────
+
+def Edit -params 1 -shell-candidates %{ git ls-files } %{ edit %arg{1} }
+
+alias global E Edit
+
+def -params .. grep-current-buffer %{
+  grep %arg{1} %val{buffile}
+}
+
+alias global g grep-current-buffer
+
+# Convenience mappings ├────────────────────────────────────────────────────────
+
+map global object | :|<ret>|<ret>
+map global object / :/<ret>/<ret>
+
+def -hidden _map_global_normal_return %[
+  menu r %[ exec %[    :  send-text                 <ret> ]                                               ] \
+       w %[ exec %[    |  fmt  --width 80           <ret> ]; echo formated selections                     ] \
+       s %[ exec %[    |  sort                      <ret> ]; echo sorted selections                       ] \
+       p %[ exec %[    !  xsel --output --clipboard <ret> ]                                               ] \
+]
+
+map global normal <tab> '<a-;>'
+
+map global normal <ret> :_map_global_normal_return<ret>
+
+def prompt_math %{
+    prompt math m %{ exec a <c-r> m <esc> | bc <ret> }
+}
+
+map global normal = :prompt_math<ret>
+map global normal + :prompt_math<ret><up><ret>
+
+hook global BufCreate [*]grep[*] %{ map -- global normal - %{ :   next<ret> } }
+hook global BufCreate [*]make[*] %{ map -- global normal - %{ :errnext<ret> } }
+
+# Hooks ├───────────────────────────────────────────────────────────────────────
+
+hook global WinCreate .* %{
+  addhl number_lines
+  addhl show_matching
+  search-highlighting-enable
+  ranger-open-on-edit-directory
+}
+
+# 【WIP】 Auto close matching block on insertion
+hook global InsertChar '"' %{ auto_insert_char '"' }
+
+def -hidden -params 1 auto_insert_char %{
+  eval -no-hooks %{
+    try %{
+      exec -draft %{ \; H <a-k> %arg{1} %arg{1} <ret> }
+      exec '<del>'
+    } \
+    catch %{
+      try %{
+        exec -draft %{ \; h h <a-K> [ \w %arg{1} ] <ret> l <a-k> \W <ret> }
+        exec %{ %arg{1} <left> }
+      }
+    }
+  }
+}
+
+# Clipboard ────────────────────────────────────────────────────────────────────
+
+hook global NormalKey y|d|c %{ nop %sh{
+  printf "$kak_selection" | xsel --input --primary
+  printf "$kak_selection" | xsel --input --clipboard
+}}
+
+# Auto-mkdir when saving buffer to file ────────────────────────────────────────
+
+hook global BufWritePre .* %{ nop %sh{ dir=$(dirname $kak_buffile)
+  [ -d $dir ] || mkdir --parents $dir
+}}
+
+# Highlighters ├────────────────────────────────────────────────────────────────
+
+addhl -group / group tabs
+addhl -group /tabs regex \t+ 0:blue
+
+# addhl -group / group space_errors
+# addhl -group /space_errors regex [?!.]\K\h(\h{2,})?(?=\H) 0:error
+# addhl -group /space_errors regex \w\K\h{2,}               0:error
+
+addhl -group / group non_breaking_spaces
+addhl -group /non_breaking_spaces regex  + 0:error
+
+addhl -group / group trailing_white_spaces
+addhl -group /trailing_white_spaces regex \h+$ 0:error
+
+addhl -group / group apostrophe
+addhl -group /apostrophe regex [A-z]+'[stl]    0:error
+addhl -group /apostrophe regex [LUDIJC]'[a-z]+ 0:error
+addhl -group /apostrophe regex [ludijc]'[a-z]+ 0:error
+
+addhl -group / group symbol
+# empty set
+addhl -group /symbol regex ∅ 0:green
+# check mark
+addhl -group /symbol regex ✓ 0:green
+# X mark
+addhl -group /symbol regex ✗ 0:green
+
+addhl -group / group dash
+# césure: doc‐
+# tor
+addhl -group /dash regex ‐ 0:red
+# range of values: [2005‑present]
+addhl -group /dash regex ‑ 0:green
+# ¬
+addhl -group /dash regex ‒ 0:error
+# incises, dialogues, connections, contrast values: Saguenay–Lac-Saint-Jean, range of values: [26 March 2005 – present]
+addhl -group /dash regex – 0:green
+# incises, dialogues
+addhl -group /dash regex — 0:yellow
+# ¬
+addhl -group /dash regex ― 0:error
+# subtraction
+addhl -group /dash regex − 0:red
+
+addhl -group / group character
+addhl -group /character regex oe 0:error
+addhl -group /character regex ¡  0:error
+addhl -group /character regex ı  0:error
+addhl -group /character regex ✕  0:error
+addhl -group /character regex ‚  0:error
+
+# Initialization ───────────────────────────────────────────────────────────────
+
+# Only shown when not in insert mode so I don’t go insane.
+
+hook global InsertEnd .* %{
+  addhl ref tabs
+  addhl ref non_breaking_spaces
+  addhl ref trailing_white_spaces
+  addhl ref symbol
+  addhl ref dash
+  addhl ref apostrophe
+  addhl ref character
+  addhl ref space_errors
+}
+
+hook global InsertBegin .* %{
+  rmhl tabs
+  rmhl non_breaking_spaces
+  rmhl trailing_white_spaces
+  rmhl symbol
+  rmhl dash
+  rmhl apostrophe
+  rmhl character
+  rmhl space_errors
+}
+
+# Filters ├─────────────────────────────────────────────────────────────────────
+
+def cleanup %{
+  apostrophe
+  clean_whitespaces
+  clean_urls
+  sentence_then_two_spaces
+  echo cleaned!
+}
+
+def apostrophe %{
+  eval -draft -itersel %{
+    try %{ exec s'<ret>c’ } catch %{ echo '' }
+  }
+}
+
+def clean_whitespaces %{
+  eval -draft -itersel %{
+    try %{ exec -draft -itersel s <ret>d          } catch %{ echo '' }
+    try %{ exec -draft -itersel s^\h+|\h+$<ret>d  } catch %{ echo '' }
+    try %{ exec -draft -itersel s\h+<ret>c<space> } catch %{ echo '' }
+  }
+}
+
+def clean_urls %{
+  eval -draft -itersel %{
+    try %{ exec -draft -itersel shttps?://www\.<ret>swww\.<ret>d } catch %{ echo '' }
+  }
+}
+
+
+def sentence_then_two_spaces %{
+  eval -draft -itersel %{
+    try %{ exec s[?!.…]<space>[A-ZáàâäçéèêëîïìôöóùúüñÂÀÄÇÉÈÊËÎÏÔÖÙÜÑ]<ret>s<space><ret>i<space> } catch %{ echo '' }
+  }
+}
+
+# File type ├───────────────────────────────────────────────────────────────────
+
+# Shell ────────────────────────────────────────────────────────────────────────
+
+hook global WinSetOption filetype=sh %{
+  set buffer tabstop     2
+  set buffer indentwidth 2
+}
+
+# Markdown ─────────────────────────────────────────────────────────────────────
+
+# addhl -group /markdown regex ^\h{4} 0:blue
+
+# CPP ──────────────────────────────────────────────────────────────────────────
+
+hook global WinSetOption filetype=cpp %{
+  clang-enable-autocomplete
+}
+
+# Moon ─────────────────────────────────────────────────────────────────────────
+
+hook global WinSetOption filetype=moon %{
+  set buffer tabstop     2
+  set buffer indentwidth 2
+}
+
+# Ruby ─────────────────────────────────────────────────────────────────────────
+
+def rb %{ set buffer filetype ruby }
+
+hook global WinSetOption filetype=ruby %{
+  set buffer tabstop     2
+  set buffer indentwidth 2
+}
+
+# GTD ──────────────────────────────────────────────────────────────────────────
+
+addhl -group / regions -default code gtd             \
+  action ^(todo|done|cancelled|aborted|waiting) $ '' \
+  state  ^(rule|fixed.point)                    $ '' \
+  time   ^(scheduled|deadline)                  $ '' \
+
+addhl -group /gtd/action regex todo              0:meta
+addhl -group /gtd/action regex done              0:keyword
+addhl -group /gtd/action regex cancelled         0:type
+addhl -group /gtd/action regex aborted           0:type
+addhl -group /gtd/action regex waiting           0:type
+addhl -group /gtd/action regex now               0:type
+addhl -group /gtd/action regex (goto|read|watch) 0:value
+
+addhl -group /gtd/state regex rule        0:identifier
+addhl -group /gtd/state regex fixed.point 0:value
+
+addhl -group /gtd/time regex scheduled 0:identifier
+addhl -group /gtd/time regex deadline  0:meta
+
+# Initialization
+
+hook global BufCreate .*(diary) %{
+  set buffer filetype markdown
+}
+
+hook global WinSetOption filetype=(grep|mail|markdown) %{
+  addhl ref gtd
+}
+
+hook global WinSetOption filetype=(?!grep|mail|markdown).* %{
+  rmhl gtd
+}
+
+# Cycle TODO|DONE|WAITING|CANCELLED
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+# TODO support counts
+def -hidden _filter_regexp_switch_todo_to_done_waiting_cancelled %{
+  exec -draft %%<a-/>todo|done|waiting|cancelled<ret>|filter_regexp --count 1 '["todo","waiting"]' '["todo","cancelled"]' '["todo","done"]'<ret>%
+}
+
+map global normal <a-c> :_filter_regexp_switch_todo_to_done_waiting_cancelled<ret>
+
+def -hidden _filter_regexp_cycle_todo_done_waiting_cancelled %{
+  exec -draft %%<a-/>todo|done|waiting|cancelled<ret>|filter_regexp --count 1 '["todo","done","waiting","cancelled"]'<ret>%
+}
+
+map global normal <a-C> :_filter_regexp_cycle_todo_done_waiting_cancelled<ret>
+
+# Quicksparse
+# ‾‾‾‾‾‾‾‾‾‾‾
+map global normal <a-g> :gtd_menu_grep<ret>
+
+def gtd_menu_grep %{ menu / %{ grep todo      %sh(echo *) } \
+                          ? %{ grep scheduled %sh(echo *) } \
+                          ! %{ grep deadline  %sh(echo *) } \
+                          h %{ grep \+\d+h    %sh(echo *) } \
+                          d %{ grep \+\d+d    %sh(echo *) } \
+                          w %{ grep \+\d+w    %sh(echo *) } \
+                          m %{ grep \+\d+m    %sh(echo *) } \
+                          y %{ grep \+\d+y    %sh(echo *) } }
+
+# Date
+# ‾‾‾‾
+map global normal <a-t> %[:exec / %sh{ date +%F.%a } <ret><ret>]
+map global normal <a-d> %[:prompt -init +%F.%a\  chronic> X %{ exec / %sh{ chronic $kak_reg_X } <lt>ret<gt> } <ret>]
+
+map global insert <a-t> %[<a-;>:exec %sh{ date +%H:%M } <ret>]
+map global insert <a-d> %[<a-;>:prompt -init +%F.%a\  chronic> X %{ exec %sh{ chronic $kak_reg_X } } <ret>]

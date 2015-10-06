@@ -1,0 +1,25 @@
+#!/bin/bash
+
+usage='usage: trash [null] FILE...
+
+*trash* accepts some switches:
+
+ * null: does no backup
+'
+
+[[ $# =  0            ]] && { echo $usage; exit 1; }
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit 0; }
+
+timestamp=$(date +%s)
+
+trash=~/.cache/trash/$timestamp
+
+# Ensure $trash exists
+mkdir --parents $trash
+
+# NULL switch
+[[ $1 = null ]] && { shift; null=1; }
+
+[[ $null ]]                      \
+&& ( rm "$@" --recursive --force )\
+|| ( mv "$@" $trash              )

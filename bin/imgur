@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'recursive-open-struct'
+require 'yajl'
+require 'uri'
+require 'colored'
+
+usage = 'imgur [API_KEY] [IMAGE]…'
+
+(STDERR.puts usage; exit(1)) if ARGV.empty?
+(STDOUT.puts usage; exit(0)) if ARGV.index '-h' or ARGV.index '--help'
+
+SITE    = 'http://imgur.com'
+API_URI = 'http://imgur.com/api/upload.json'
+API_KEY = !(File.exists? ARGV.first) ? ARGV.shift : 'b3625162d3418ac51a9ee805b1840452'
+
+IMAGE_KEYS = ARGV.map do |image|
+
+out = RecursiveOpenStruct.new Yajl::Parser.parse `
+
+curl --silent #{API_URI} --form key=#{API_KEY} --form image=@#{image}`
+
+puts out.rsp.image.imgur_page.green
+puts out.rsp.image.delete_page.red
+puts out.rsp.image.original_image.white
+
+puts
+
+out.rsp.image.image_hash
+
+end
+
+puts (URI::join SITE, IMAGE_KEYS.join(',')).to_s

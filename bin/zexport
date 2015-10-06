@@ -1,0 +1,12 @@
+#!/bin/bash
+
+usage='usage: zexport
+
+ZIP current directory to home.
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+dirname=$(basename $PWD)
+
+cd .. ; zip --recurse-paths --symlinks ~/$dirname.zip $dirname

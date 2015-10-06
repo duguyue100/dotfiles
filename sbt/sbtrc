@@ -1,0 +1,14 @@
+alias c  =  compile
+alias cc = ~compile
+
+alias p  =  project
+alias pp = ~project
+
+alias l  =  reload
+alias ll = ~reload
+
+alias r  =  run
+alias rr = ~run
+
+alias t  =  test
+alias tt = ~test

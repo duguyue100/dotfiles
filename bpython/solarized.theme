@@ -1,0 +1,21 @@
+# Solarized color scheme — http://ethanschoonover.com/solarized
+#
+# http://docs.bpython-interpreter.org/themes.html
+
+[syntax]
+    keyword     = g
+    name        = b
+    comment     = d
+    string      = c
+    error       = R
+    number      = c
+    operator    = g
+    punctuation = d
+    token       = c
+    paren       = b
+
+[interface]
+    background  = d
+    output      = d
+    main        = d
+    prompt      = d

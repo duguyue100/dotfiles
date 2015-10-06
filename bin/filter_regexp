@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'optparse'
+
+# Options ├─────────────────────────────────────────────────────────────────────
+
+parser = OptionParser.new do |opt|
+
+  opt.on('-h', '--help') do
+
+    print <<EOF
+usage: filter_regexp JSON...
+
+options:
+
+    -h, --help
+    Display help message
+
+    -n, --count
+    Select nth next item for list object
+
+example:
+
+Interfacing with Kakoune
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+def -hidden _filter_regexp_switch_todo_to_done_waiting_cancelled %{
+  exec -draft -itersel %{ <space><a-/>todo|done|waiting|cancelled<ret>|filter_regexp --count %sh{ echo $kak_count } '["todo","waiting"]' '["todo","cancelled"]' '["todo","done"]'<ret> }
+}
+
+map global normal <a-c> :_filter_regexp_switch_todo_to_done_waiting_cancelled<ret>
+
+def -hidden _filter_regexp_cycle_todo_done_waiting_cancelled %{
+  exec -draft -itersel %{ <space><a-/>todo|done|waiting|cancelled<ret>|filter_regexp --count %sh{ echo $kak_count } '["todo","done","waiting","cancelled"]'<ret> }
+}
+
+map global normal <a-C> :_filter_regexp_cycle_todo_done_waiting_cancelled<ret>
+EOF
+    exit
+  end
+
+  opt.on('-n', '--count COUNT', Integer) { |v| $count = v }
+
+  $count ||= 1
+
+end
+
+begin
+  parser.parse!
+rescue OptionParser::InvalidOption => e
+  STDERR.puts e
+  STDERR.puts parser
+  exit 1
+end
+
+# Main ├────────────────────────────────────────────────────────────────────────
+
+def main
+
+  selection  = STDIN.read
+
+  definition = ARGV.map do |json|
+    object = JSON.parse json
+
+    if object.kind_of? Hash
+      object
+
+    elsif object.kind_of? Array
+      object.to_h $count
+
+    end
+  end.inject(:merge)
+
+  replacement = filter_regexp(selection, definition)
+
+  print replacement || selection
+end
+
+# Core ├────────────────────────────────────────────────────────────────────────
+
+def filter_regexp selection, definition
+  definition.find do |pattern, replacement|
+    return replacement if selection.match pattern
+  end
+end
+
+# Utility ├─────────────────────────────────────────────────────────────────────
+
+class Array
+  def to_h count=1
+    Hash[ zip rotate count ]
+  end
+end
+
+
+main

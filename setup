@@ -1,0 +1,74 @@
+#!/usr/bin/env fish
+
+set LOG (mktemp)
+
+set usage 'usage: setup [now] (ignores unrecognized commands)
+
+To set up, I just type setup.  It will install dotfiles in home and run diff
+tool when conflict occurs.  It also set the right permission in the local repository.
+'
+
+if not echo $argv | grep .                                            >/dev/null
+  echo $usage; and exit 1
+end
+
+if echo $argv | grep help                                             >/dev/null
+  echo $usage; and exit 0
+end
+
+function main
+
+    printf 'Setting permissions…'
+
+    begin
+    chmod --recursive +x (find -type d                                           \
+                               -name bin                                     -or \
+                               -name exec                                    -or \
+                               -name hooks                                   -or \
+                               -name scripts                                 -or \
+                               -name test)
+                                                                             end 1> /dev/null\
+                                                                                 2> $LOG
+    pass < $LOG
+
+    printf 'Installing…'
+
+    begin
+    for file in (find *)
+
+        set source $PWD/$file
+        set dest   $HOME/.$file
+        set them   $source $dest
+
+        if dir_exists $source
+            if not exists $dest
+                mkdir --parents $dest                                      ; end
+
+        else if diff $them | grep .
+            kakdiff $them +wincmd\ L
+
+        else if broken_link $source
+            if file_exists $dest
+                continue                                                   ; end
+        else
+            cp $them                                                       ; end
+                                                                             end
+                                                                             end 1> /dev/null\
+                                                                                 2> $LOG
+    pass < $LOG
+end
+
+# Utility ├─────────────────────────────────────────────────────────────────────
+
+function exists      ; test -e $argv                        ; and return 0 ; end
+function file_exists ; test -f $argv                        ; and return 0 ; end
+function dir_exists  ; test -d $argv                        ; and return 0 ; end
+function broken_link ; test -L $argv; and not test -e $argv ; and return 0 ; end
+
+function pass
+  if test $status = 0 ; echo ✓ | colout . green normal ;
+  else                ; echo ✗ | colout . red   normal ; cat ; end
+end
+
+
+main

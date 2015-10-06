@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'gir_ffi'
+require 'shellwords'
+
+command, menu = ARGV
+
+i3 = I3ipc::Connection.new nil if GirFFI.setup :i3ipc
+
+windows = i3.get_tree.leaves
+
+menu_windows = windows.map.with_index { |window, index| [ (index.to_s + ' ' + (window.mark ? window.mark : "#{window.window_class} #{window.name}")), window ] }.to_h
+
+menu_entries = menu_windows.keys.join("\n").shellescape
+
+selected_entries = %x(echo #{menu_entries} | #{menu}).chomp
+
+selected_entries.split("\n").each do |entry|
+  menu_windows[entry].tap do |window|
+    window.command (command % { id: window.window })
+  end
+end

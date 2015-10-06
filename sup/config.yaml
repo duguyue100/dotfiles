@@ -1,0 +1,30 @@
+---
+:editor: kak
+:thread_by_subject: false
+:edit_signature: false
+:ask_for_from: false
+:ask_for_to: false
+:ask_for_cc: false
+:ask_for_bcc: false
+:ask_for_subject: false
+:account_selector: true
+:confirm_no_attachments: true
+:confirm_top_posting: true
+:jump_to_open_message: true
+:discard_snippets_from_encrypted_messages: false
+:load_more_threads_when_scrolling: true
+:sent_source: maildir:/home/alex/mail/inbox
+:archive_sent: true
+:poll_interval: 300
+:wrap_width: 0
+:slip_rows: 0
+:col_jump: 2
+:sync_back_to_maildir: false
+:continuous_scroll: false
+:always_edit_async: false
+:accounts:
+  :default:
+    :name: Alex Leferry 2>
+    :email: alexherbo2@gmail.com
+    :alternates: []
+    :sendmail: msmtpq --account=alexherbo2@gmail.com --read-recipients

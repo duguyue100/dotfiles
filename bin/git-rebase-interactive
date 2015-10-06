@@ -1,0 +1,55 @@
+#!/usr/bin/env fish
+
+set EDITOR (mktemp); chmod +x $EDITOR
+
+set usage 'usage: git rebase-interactive [[COMMAND] REVISION]...
+
+ * When no argument is given, git rebase interactive from start with EDITOR.
+ * When [[COMMAND] REVISION]... is given, git rebase interactive but skip EDITOR.
+ * When no command is given, it defaults to 'edit'.
+
+Commands:
+  p, pick   = use commit
+  r, reword = use commit, but edit the commit message
+  e, edit   = use commit, but stop for amending
+  s, squash = use commit, but meld into previous commit
+  f, fixup  = like 'squash', but discard this commit’s log message
+  x, exec   = run command (the rest of the line) using shell
+'
+
+if echo $argv | egrep -- '-h|--help'; echo $usage; and exit
+end
+
+function main
+
+  set is_rebasing (git status | grep 'rebase in progress')
+
+  if test $is_rebasing
+    git rebase --continue
+  else
+
+    set rebase_command edit
+
+    for token in $argv
+      if echo $token | egrep '^([p]|pick|[r]|reword|[e]|edit|[s]|squash|[f]|fixup|[x]|exec)$'
+        set rebase_command $token; and continue
+      end
+      set revision       (printf '%.7s' $argv)
+      set sed_expression "$sed_expression; /$revision/ s/^([p]|pick|[r]|reword|[e]|edit|[s]|squash|[f]|fixup|[x]|exec)/$rebase_command/"
+    end
+
+    echo '
+    FILE=$1
+    sed --regexp-extended --in-place "'$sed_expression'" $FILE
+  ' > $EDITOR
+
+    set last_revision $revision
+
+    set revision (git log --pretty=%h | awk "/$last_revision/ { getline; print }")
+
+    git rebase --interactive $revision
+  end
+end
+
+
+main $argv

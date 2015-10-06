@@ -1,0 +1,30 @@
+#!/bin/bash
+
+INDEX=$(git status --porcelain 2>/dev/null)
+
+usage='
+Git prompt status
+by Steve Losh
+http://bitbucket.org/sjl/dotfiles/src/tip/bin/git_prompt_status
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit; }
+
+git_status_matches() { pattern=$1
+  echo "$INDEX" | grep $pattern >/dev/null
+}
+
+
+if git_status_matches '^UU '                            ; then STATUS="C$STATUS"
+fi
+
+if git_status_matches '^.[MD] '                         ; then STATUS="?$STATUS"
+fi
+
+if git_status_matches '^?? '                            ; then STATUS="?$STATUS"
+fi
+
+if git_status_matches '^[AMDR]. '                       ; then STATUS="!$STATUS"
+fi
+
+printf "$STATUS"

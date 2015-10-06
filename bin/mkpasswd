@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+#│
+#│ Completion
+#│ ‾‾‾‾‾‾‾‾‾‾
+#│  * fish: https://github.com/alexherbo2/dotfiles/blob/master/fish/completions/mkpasswd.fish
+#│
+
+require 'optparse'
+require 'digest/sha2'
+require 'base64'
+
+parser = OptionParser.new do |opt|
+
+  opt.on('-h', '--help') do
+
+    print 'usage: mkpasswd --domain DOMAIN --username USERNAME --password PASSWORD --length LENGTH
+
+base64(sha512(PASSWORD.USERNAME.DOMAIN))[0..LENGTH]
+
+options:
+
+    -h, --help
+    display help message
+
+options are mandatory:
+
+    --password STR
+    --username STR
+    --domain   STR
+    --length   INT
+'
+    exit
+  end
+
+  opt.on('--password STR', String ) { |v| $password      = v }
+  opt.on('--username STR', String ) { |v| $username      = v }
+  opt.on('--domain   STR', String ) { |v| $domain        = v }
+  opt.on('--length   INT', Integer) { |v| $length        = v }
+  opt.on('--alpha-numeric')         { |v| $alpha_numeric = v }
+
+end
+
+begin
+  parser.parse!
+rescue OptionParser::InvalidOption => e
+  STDERR.puts e
+  STDERR.puts parser
+  exit 1
+end
+
+password = [ $password, $username, $domain ].compact.join '.'
+
+encrypted_password = Base64::encode64(Digest::SHA2.new(512).digest(password))
+
+if $alpha_numeric
+  encrypted_password.gsub! /[^[:alnum:]]/, ''
+end
+
+if $length
+  encrypted_password = encrypted_password[0, $length]
+end
+
+print encrypted_password

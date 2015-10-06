@@ -1,0 +1,10 @@
+#!/bin/bash
+
+usage='usage: dyndns_checkip
+
+Check IP from DynDNS service.
+'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit 0; }
+
+printf $(curl --silent checkip.dyndns.org | egrep --only-matching '([0-9]+[.]?)+')

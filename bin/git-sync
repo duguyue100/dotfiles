@@ -1,0 +1,19 @@
+#!/bin/bash
+
+usage='usage: git sync BRANCH
+
+Synchronize current branch with BRANCH.
+'
+
+[[ $# =  0            ]] && { echo $usage; exit 1; }
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit 0; }
+
+branch=$1
+
+echo Syncing $(git-current-branch) with $branch
+
+git checkout $branch
+git pull
+
+git checkout -
+git rebase   $branch

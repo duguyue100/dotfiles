@@ -1,0 +1,3 @@
+#!/bin/sh
+
+upower --show-info $(upower --enumerate | grep battery)

@@ -1,0 +1,298 @@
+# i3 config file (scm)
+#
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+#
+# This config file uses keycodes (bindsym) and was written for the QWERTY layout.
+#
+
+bindsym Mod4+F1 exec setxkbmap qwerty-latin    && xmodmap .Xmodmap
+bindsym Mod4+F2 exec setxkbmap qwerty-cyrillic && xmodmap .Xmodmap
+
+# TypeMatrix 2030
+# win layer:
+# ╔════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╦════╗
+# ║exit║lat.║cyr.║ F3 ║ F4 ║ F5 ║del ║ F6 ║ F7 ║ F8 ║ F9 ║prt.║ F11║ F12║num.║
+# ╚════╩════╩════╩════╩════╩════╣clip╠════╩════╩════╩════╩════╩════╩════╬════╣
+# │    │    │    │    │    │    ╠════╣    │    │    │    │    │back│ligh║calc║
+# │    │ 1  │ 2  │ 3  │ 4  │ 5  ║ ⌫  ║ 6  │ 7  │ 8  │ 9  │ 0  │opac│ity ║    ║
+# ╔════╗────┼────┼────┼────┼────║    ║────┼────┼────┼────┼────┼────┼────╠════╣
+# ║ ↹  ║book│clos│    │    │xres║focu║full│pare│chil│spli│star│    │    ║mail║
+# ║bck.║mark│e   │    │    │ourc║s   ║scre│rent│d   │t   │t   │    │    ║   ⇤║
+# ╠════╣────┼────┼────┼────┼────╠════╣────┼────┼────┼────┼────┼────╔════╬════╣
+# ║ ⇧  ║tabb│stac│divi│focu│    ║ ⏎  ║    │    │    │    │    │    ║ ⇧  ║ ⇪  ║
+# ║    ║ed  │king│ded │s   │    ║    ║   ←│   ↓│   ↑│   →│    │    ║    ║  AC║
+# ║    ║────┼────┼────┼─══─┼────║term║────┼─══─┼────┼────┼────┼────║    ╠════╣
+# ║    ║    │    │scra│    │bord║inal║next│musi│msg │    │    │    ║    ║www ║
+# ║    ║    │    │tch │    │er  ║    ║work│c   │    │    │    │    ║   +║   ⌫║
+# ╠════╬════╦════╦════╦════╧════╩════╩════╧════╦════╦════╦════╦════╬════╬════╣
+# ║ctrl║    ║app ║shuf║                        ║desk║ ⇱  ║ ⇑  ║ ⇲  ║ctrl║ ⇞  ║
+# ║    ║cut ║copy║past║                        ║    ║    ║    ║    ║    ║  bk║
+# ╠════╬════╩═╦══╩════╣       tiling/floating  ╠════╬════╬════╬════╣    ╠════╣
+# ║fn  ║start ║alt    ╠════════════════════════╣alt ║ ⇐  ║ ⇓  ║ ⇒  ║    ║ ⇟  ║
+# ║    ║      ║       ║                        ║ gr ║    ║    ║    ║entr║  fw║
+# ╚════╩══════╩═══════╝                        ╚════╩════╩════╩════╩════╩════╝
+
+# Appending
+# ‾‾‾‾‾‾‾‾‾
+# for hjkl commands, using shift permits to move container instead of focusing,
+# using ctrl permits to resize container.
+#
+
+font pango: DejaVu
+
+# Colors — Partial Solarized color palette
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+# Common
+set $white #eaeaea
+set $black #202020
+set $blue  #268bd2
+set $red   #dc322f
+
+# Dark
+set $base3 #fdf6e3
+
+# class                 border backgr text   indicator
+client.focused          $white $white $black $blue
+client.focused_inactive $black $black $white $black
+client.unfocused        $black $black $white $black
+client.urgent           $red   $red   $base3 $black
+
+bar {
+  tray_output primary
+  status_command i3status --config .i3/status/config
+  colors {
+    background           $white
+    statusline           $black
+    separator            $white
+    focused_workspace  0 $black $white
+    active_workspace   0 $black $white
+    inactive_workspace 0 $white $black
+    urgent_workspace   0 $red   $base3 } }
+
+floating_modifier Mod4
+
+workspace_layout tabbed
+
+new_window none
+
+new_float none
+
+# Hooks ├───────────────────────────────────────────────────────────────────────
+
+for_window [instance=scratchpad] move scratchpad
+
+for_window [instance=float] floating enable
+
+# Convenience mappings ├────────────────────────────────────────────────────────
+
+bindsym button2 mode sync
+
+mode sync {
+
+  bindsym Return exec sync key --keys Return --windows $(.i3/scripts/window_list_container)
+
+  bindsym --whole-window button1 exec sync click --button 1 --windows $(.i3/scripts/window_list_container)
+  bindsym --whole-window button3 exec sync click --button 3 --windows $(.i3/scripts/window_list_container)
+
+  bindsym Escape mode default
+
+  bindsym button2 mode default
+
+}
+
+# Layouts ──────────────────────────────────────────────────────────────────────
+
+bindsym Mod4+d layout toggle split
+bindsym Mod4+s layout stacking
+bindsym Mod4+a layout tabbed
+
+bindsym Mod4+y fullscreen
+
+# Outputs ──────────────────────────────────────────────────────────────────────
+
+bindsym Mod1+Mod4+h output left
+bindsym Mod1+Mod4+j output down
+bindsym Mod1+Mod4+k output up
+bindsym Mod1+Mod4+l output right
+
+bindsym Mod1+Mod4+Shift+h move workspace to output left
+bindsym Mod1+Mod4+Shift+j move workspace to output down
+bindsym Mod1+Mod4+Shift+k move workspace to output up
+bindsym Mod1+Mod4+Shift+l move workspace to output right
+
+bindsym Mod1+Mod4+n       workspace next_on_output
+bindsym Mod1+Mod4+Shift+n workspace prev_on_output
+
+# Workspaces ───────────────────────────────────────────────────────────────────
+
+bindsym Mod4+n                           workspace next
+bindsym Mod4+Shift+n                     workspace prev
+bindsym Mod4+Tab                         workspace back_and_forth
+bindsym Mod4+Shift+Tab move container to workspace back_and_forth
+
+bind Mod4+49 workspace  0
+bind Mod4+10 workspace  1
+bind Mod4+11 workspace  2
+bind Mod4+12 workspace  3
+bind Mod4+13 workspace  4
+bind Mod4+14 workspace  5
+bind Mod4+15 workspace  6
+bind Mod4+16 workspace  7
+bind Mod4+17 workspace  8
+bind Mod4+18 workspace  9
+bind Mod4+19 workspace 10
+bind Mod4+20 workspace 11
+bind Mod4+21 workspace 12
+
+bind Mod4+Shift+49 move container to workspace  0
+bind Mod4+Shift+10 move container to workspace  1
+bind Mod4+Shift+11 move container to workspace  2
+bind Mod4+Shift+12 move container to workspace  3
+bind Mod4+Shift+13 move container to workspace  4
+bind Mod4+Shift+14 move container to workspace  5
+bind Mod4+Shift+15 move container to workspace  6
+bind Mod4+Shift+16 move container to workspace  7
+bind Mod4+Shift+17 move container to workspace  8
+bind Mod4+Shift+18 move container to workspace  9
+bind Mod4+Shift+19 move container to workspace 10
+bind Mod4+Shift+20 move container to workspace 11
+bind Mod4+Shift+21 move container to workspace 12
+
+# Scratchpad
+
+bindsym Mod4+Shift+c move scratchpad
+bindsym Mod4+c scratchpad show
+
+# Containers ───────────────────────────────────────────────────────────────────
+
+bindsym Mod4+Shift+o split h
+bindsym Mod4+o       split v
+bindsym Mod4+w       kill
+
+bindsym Mod4+u focus parent
+bindsym Mod4+i focus child
+
+bindsym Mod4+h focus left
+bindsym Mod4+j focus down
+bindsym Mod4+k focus up
+bindsym Mod4+l focus right
+
+bindsym Mod4+Shift+h move left
+bindsym Mod4+Shift+j move down
+bindsym Mod4+Shift+k move up
+bindsym Mod4+Shift+l move right
+
+# Resize in these directions.
+
+#|‾‾‾‾‾‾‾‾‾|→
+#|         |→
+#|         |→
+#|         |→
+#|         |→
+#|         |→
+#|_________|→
+# ↓ ↓ ↓ ↓ ↓ ↘
+
+# Pixels are meaningful when you are dealing with floating containers,
+# ‾‾‾‾‾‾ because they are not part of the tiling layout.
+
+# Percentage points are meaningful when you are dealing with tiling containers,
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ since for them, i3 actually stores / works with ppts, not pixels.
+
+bindsym Mod4+Control+h resize shrink right 10 px or 1 ppt
+bindsym Mod4+Control+j resize grow   down  10 px or 1 ppt
+bindsym Mod4+Control+k resize shrink down  10 px or 1 ppt
+bindsym Mod4+Control+l resize grow   right 10 px or 1 ppt
+
+# Cycle through border styles
+# (note: does not apply to tabbed containers)
+
+#|‾‾‾‾‾‾‾‾‾| |‾‾‾‾‾‾‾‾‾|     |‾ ‾ ‾ ‾ ‾|
+#|‾‾‾‾‾‾‾‾‾| |         |
+#|         | |         |     |         |
+#|         | |         |
+#|         | |         |     |         |
+#|         | |         |
+#|         | |         |     |         |
+#|_________| |_________↔ 1px |_ _ _ _ _↔ 0px
+
+bindsym Mod4+Shift+b border normal
+bindsym Mod4+b       border pixel
+bindsym Mod4+v       border none
+
+# Float
+
+bindsym Mod4+Shift+space floating toggle
+bindsym Mod4+space focus mode_toggle
+
+# Windows
+
+bindsym Mod4+BackSpace       exec .i3/scripts/window_commander  focus                   "rofi -dmenu -mesg 'Switch to window'"
+bindsym Mod4+Shift+BackSpace exec .i3/scripts/window_commander 'move workspace current' "rofi -dmenu -mesg 'Bring window'"
+
+# Rename window title
+
+bindsym Mod4+r exec xdotool getactivewindow set_window --name $(echo | rofi -dmenu -mesg 'New window name')
+
+# Marks
+
+bindsym Mod4+m       exec i3-msg [con_mark=$(i3-msg -t get_marks | jq --raw-output .[] | rofi -dmenu -mesg 'Go to mark')] focus
+bindsym Mod4+Shift+m exec i3-msg      mark $(i3-msg -t get_marks | jq --raw-output .[] | rofi -dmenu -mesg 'Set Mark')
+
+# Desktop settings ─────────────────────────────────────────────────────────────
+
+# Launcher
+bindsym Mod4+p       exec launcher $(launcher | rofi -dmenu)
+bindsym Mod4+Shift+p exec $(tail --lines 1 .cache/launcher/history)
+
+# Terminal
+
+bindsym Mod4+Return       exec $TERMINAL
+bindsym Mod4+Shift+Return exec $TERMINAL --directory `get_active_window_working_directory`
+
+# Copy IP to X selection
+bindsym Mod4+Shift+i exec dyndns_checkip | xsel
+
+# Opacity   │F11  │F12 │
+#           │minus│plus│
+bindsym Mod4+F11 exec transset --actual --inc .05
+bindsym Mod4+F12 exec transset --actual --dec .05
+
+# Backlight │F11  │F12 │
+#           │minus│plus│
+bindsym Mod4+Shift+F11 exec xbacklight -5
+bindsym Mod4+Shift+F12 exec xbacklight +5
+
+# Capture
+bindsym Print exec import -window root $(date +%F.%T).png
+
+# Characters
+bindsym Mod4+q exec xdotool type $(cat characters | rofi -dmenu -mesg Characters | cuts --fields 2-)
+
+# Browser — query bookmarks
+bindsym Mod4+Shift+q exec bookmarks=$(rofi -dmenu -mesg Bookmarks < bookmarks) && pages=$(echo $bookmarks | cuts --fields 1) && $BROWSER $pages
+
+# Multimedia keys ──────────────────────────────────────────────────────────────
+
+bindsym XF86Cut   exec xdotool key ctrl+x
+bindsym XF86Copy  exec xdotool key ctrl+c
+bindsym XF86Paste exec xdotool key ctrl+v
+
+bindsym XF86ScreenSaver exec i3lock --color 000000
+
+bindsym XF86Sleep     exec sudo systemctl suspend
+bindsym XF86Hibernate exec sudo systemctl suspend
+bindsym XF86PowerOff  exec sudo systemctl suspend
+
+bindsym XF86Mail [title=Sup] scratchpad show
+bindsym XF86WWW  [class=Chromium] focus
+
+bindsym XF86AudioMute        exec amixer set Master toggle
+bindsym XF86AudioLowerVolume exec amixer set Master 5%-
+bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
+
+bindsym XF86AudioPlay  exec echo cycle pause   | socat - ~/.config/mpv/socket
+bindsym XF86AudioPause exec echo cycle pause   | socat - ~/.config/mpv/socket
+bindsym XF86AudioStop  exec echo cycle pause   | socat - ~/.config/mpv/socket
+bindsym XF86AudioPrev  exec echo playlist_prev | socat - ~/.config/mpv/socket
+bindsym XF86AudioNext  exec echo playlist_next | socat - ~/.config/mpv/socket

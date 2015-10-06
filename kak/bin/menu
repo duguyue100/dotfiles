@@ -1,0 +1,12 @@
+#!/bin/sh
+
+out=$(mktemp)
+
+cat |
+
+kak -n -e "addhl regex ^.+$ 0:green
+           map global normal <ret> %{ x y % p d :write $out; quit <ret> }
+           map global normal <esc> %{     %   d :            quit <ret> }
+           exec /                                                       " > /dev/tty
+
+cat $out

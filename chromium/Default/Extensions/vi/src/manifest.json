@@ -1,0 +1,18 @@
+{
+    "manifest_version" : 2                                                                                      ,
+    "name"             : "vi"                                                                                   ,
+    "description"      : "vi"                                                                                   ,
+    "icons"            :                                                                                        {
+        "16"           : "icons/16.png"                                                                         ,
+        "48"           : "icons/48.png"                                                                         ,
+        "128"          : "icons/128.png"                                                                       },
+    "homepage_url"     : "https://github.com/alexherbo2/dotfiles/blob/master/chromium/Default/Extensions/vi"    ,
+    "version"          : "1"                                                                                    ,
+    "permissions"      : [ "nativeMessaging", "tabs", "sessions", "notifications", "clipboardRead", "clipboardWrite", "https://secure.flickr.com/"                                                        ],
+    "background"       : {
+        "scripts"      : [ "background_scripts/main.js"                                                      ] },
+    "content_scripts"  : [                                                                                     {
+        "all_frames"   : true                                                                                   ,
+        "js"           : [ "content_scripts/main.js"                                                           ],
+        "matches"      : [ "<all_urls>"                                                                        ],
+        "run_at"       : "document_start"                                                                    } ] }

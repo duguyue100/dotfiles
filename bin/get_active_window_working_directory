@@ -1,0 +1,10 @@
+#!/bin/bash
+
+usage='usage: terminal -cd `get_active_window_working_directory`'
+
+[[ $* =~ ^(-h|--help) ]] && { echo $usage; exit 0; }
+
+file=$(xprop -id `xdotool getactivewindow` | grep _NET_WM_NAME | egrep --only-matching '~?[^" ()]*/+[^" ()]+')
+
+[[ -f $file ]] && dirname $file ||
+[[ -d $file ]] && echo    $file || pwd
